@@ -1,5 +1,10 @@
-#region VEXcode Generated Robot Configuration
+# Library imports
 from vex import *
+
+
+#####################
+# Vex Device Config #
+#####################
 
 brain = Brain()
 
