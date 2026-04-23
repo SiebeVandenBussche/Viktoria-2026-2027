@@ -1,39 +1,31 @@
+# ---------------------------------------------------------------------------- #
+#                                                                              #
+# 	Module:       main.py                                                      #
+# 	Author:       VandenBusscheSiebe                                           #
+# 	Created:      4/23/2026, 12:37:54 PM                                       #
+# 	Description:  V5 project                                                   #
+#                                                                              #
+# ---------------------------------------------------------------------------- #
+
 # Library imports
 from vex import *
 
-
-#####################
-# Vex Device Config #
-#####################
-
 brain = Brain()
 
-# Drivetrain motors (6 total, 3 per side)
-Left_motor_1 = Motor(Ports.PORT11, True)
-Left_motor_2 = Motor(Ports.PORT12,  True)
-Left_motor_3 = Motor(Ports.PORT13,  True)
-Left = MotorGroup(Left_motor_1, Left_motor_2, Left_motor_3)
+def autonomous():
+    brain.screen.clear_screen()
+    brain.screen.print("autonomous code")
+    # place automonous code here
 
-Right_motor_1 = Motor(Ports.PORT3, False)
-Right_motor_2 = Motor(Ports.PORT2, False)
-Right_motor_3 = Motor(Ports.PORT1, False)
-Right = MotorGroup(Right_motor_1, Right_motor_2, Right_motor_3)
+def user_control():
+    brain.screen.clear_screen()
+    brain.screen.print("driver control")
+    # place driver control in this while loop
+    while True:
+        wait(20, MSEC)
 
-controller_1 = Controller(PRIMARY)
+# create competition instance
+comp = Competition(user_control, autonomous)
 
-#####################
-#   Drive function  #
-#####################
-
-def Drive():
-    Left.set_velocity((controller_1.axis3.position() + controller_1.axis1.position()), PERCENT)
-    Right.set_velocity((controller_1.axis3.position() - controller_1.axis1.position()), PERCENT)
-    Left.spin(FORWARD)
-    Right.spin(FORWARD)
-
-def vexcode_driver_function():
-    while competition.is_driver_control() and competition.is_enabled():
-        Drive()
-        wait(5, MSEC)
-
-competition = Competition(vexcode_driver_function, None)
+# actions to do when the program starts
+brain.screen.clear_screen()
