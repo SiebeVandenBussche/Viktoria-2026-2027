@@ -1,4 +1,4 @@
-﻿# VEX V5 Robot — `develop` branch
+# VEX V5 Robot — `develop` branch
 
 ---
 
