@@ -12,20 +12,17 @@ from vex import *
 # ---------------------------------------------------------------------------- #
 brain = Brain()
 controller = Controller()
-left  = MotorGroup(Motor(Ports.PORT1), Motor(Ports.PORT2))
-right = MotorGroup(Motor(Ports.PORT3), Motor(Ports.PORT4))
+left  = MotorGroup(Motor(Ports.PORT9), Motor(Ports.PORT10))
+right = MotorGroup(Motor(Ports.PORT19), Motor(Ports.PORT20))
 # ---------------------------------------------------------------------------- #
 #   Drive functions                                                            #
 # ---------------------------------------------------------------------------- #
-k = 2
+k = 1
 def driveGraph(x):
     """
     A simple mathemathic function to translate controller input into velocity output.
     """
-    if x > 0:
-        return (x**k)/10**((k-1)*2)
-    else:
-        return -(x**k)/10**((k-1)*2)
+    return (x * k) / 10 ** ((k - 1) * 2)
 def changeDriveGraph(controller: Controller):
     """
     changes the constant in the DriveGraph on button press
@@ -43,7 +40,7 @@ def arcadeDriveGraph(left: MotorGroup, right: MotorGroup, controller: Controller
     a graph translates forward controller input to forward speed.
     """
     left.set_velocity((driveGraph(controller.axis3.position()) + controller.axis1.position()), PERCENT)
-    right.set_velocity((driveGraph(controller.axis3.position()) - controller.axis1.position()), PERCENT)
+    right.set_velocity(-(driveGraph(controller.axis3.position()) - controller.axis1.position()), PERCENT)
     left.spin(FORWARD)
     right.spin(FORWARD)
 # ---------------------------------------------------------------------------- #
