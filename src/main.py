@@ -17,9 +17,9 @@ right = MotorGroup(Motor(Ports.PORT19), Motor(Ports.PORT20)) # The right motor g
 intake = Motor(Ports.PORT3, True) # The intake motors.
 
 # Lift
-lift = MotorGroup(
-    Motor(Ports.PORT2, GearSetting.RATIO_36_1, False),
-    Motor(Ports.PORT12, GearSetting.RATIO_36_1, True)
+lift = MotorGroup( # Both lift motors are in a motor group, so the left and right are controlled together.
+    Motor(Ports.PORT2, GearSetting.RATIO_36_1, False), # Red Cartridge (36:1) for more torque, not reversed
+    Motor(Ports.PORT12, GearSetting.RATIO_36_1, True) # Red Cartridge (36:1) for more torque, reversed, because the motor is mounted in the opposite direction
 )
 # ---------------------------------------------------------------------------- #
 #   Drive functions                                                            #
@@ -67,51 +67,61 @@ def intakeControl(intake: Motor, controller: Controller):
 # ---------------------------------------------------------------------------- #
 #   Lift Functions                                                           #
 # ---------------------------------------------------------------------------- #
-LIFT_MIN = 0
+LIFT_MIN = 0 # The lowest position of the lift, in degrees.
 LIFT_MAX = 1400 # To find put on 300 then go run code and go lift higher, if not at limit raise LIFT_MAX by 200-300, repeat, if lift at height limit do that degree maybe minus 20 or 30???
 
-LIFT_KP = 0.25
-LIFT_TOLERENCE = 10
-LIFT_MANUAL_STEP = 8
+LIFT_KP = 0.25 # How strong the lift reacts to the error. Higher is faster.
+LIFT_TOLERENCE = 10 # How many degrees the lift may be off target and still be considered as at the target position.
+LIFT_MANUAL_STEP = 8 # How many degrees the target moves each loop while we hold the buttons.
 
-lift.set_stopping(HOLD)
-lift.set_position(0, DEGREES)
+lift.set_stopping(HOLD) # When the lift is not moving, it will hold its position.
+lift.set_position(0, DEGREES) # Sets the current position as 0, so the lift must be fully down when the program starts.
 
-lift_target = 0
+lift_target = 0 # The position in degrees where we want the lift to go.
 
 def lift_update():
-    global lift_target
+    """
+    Moves the lift to the target position using a simple proportional controller. The further away, the faster it moves.
+    """
+    global lift_target # We change it in this function, so it needs to be global.
 
+    # Keeps the lift target within the limits of the lift, so it doesn't try to go higher or lower than it can.
     if lift_target > LIFT_MAX:
         lift_target = LIFT_MAX
     if lift_target < LIFT_MIN:
         lift_target = LIFT_MIN
 
-    position = lift.position(DEGREES)
-    error = lift_target - position
+    position = lift.position(DEGREES) # Where the lift is now.
+    error = lift_target - position # How far away the lift is from the target position. Positive = up, Negative = down
 
+    # If the lift is close enough to the target position, we stop moving it, and hold it in place.
     if error < LIFT_TOLERENCE and error > -LIFT_TOLERENCE:
         lift.stop()
         return
 
-    speed = error * LIFT_KP
+    speed = error * LIFT_KP # A big error gives a high speed, so the lift slows down as it gets closer.
+
+    # Limits the speed to a maximum of 100% up and down.
     if speed > 100:
         speed = 100
     if speed < -100:
         speed = -100
 
-    lift.spin(FORWARD, speed, PERCENT)
+    lift.spin(FORWARD, speed, PERCENT) # If speed is negative, it goes down.
 
 def lift_control():
-    global lift_target
+    """
+    Lets the driver move the lift. R1 and R2 only change the target position, the lift_update function moves the lift to that position.
+    """
+    global lift_target # We change it in this function, so it needs to be global.
 
-    if controller.buttonR1.pressing():
+    if controller.buttonR1.pressing(): # When we hold the R1-button the target goes up.
         lift_target = lift_target + LIFT_MANUAL_STEP
-    if controller.buttonR2.pressing():
+    if controller.buttonR2.pressing(): # When we hold the R2-button the target goes down.
         lift_target = lift_target - LIFT_MANUAL_STEP
 
     # Maybe possible like set heights? For later
-    lift_update()
+    lift_update() # Runs every loop, so the lift will always move to the target position, even if we don't press any buttons.
 
 
 # ---------------------------------------------------------------------------- #
