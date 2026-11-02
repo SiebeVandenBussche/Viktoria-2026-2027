@@ -13,7 +13,7 @@ from vex import * # This gives us access to all VEX robot tools.
 brain = Brain() # The robot's brain. It defines how we can call te robot and its devices.
 controller = Controller() # The controller. It defines how we can call the controller and its buttons/joysticks.
 left  = MotorGroup(Motor(Ports.PORT9), Motor(Ports.PORT10)) # The left motor group. It defines how we control them together. We also define which ports the motors are plugged into.
-right = MotorGroup(Motor(Ports.PORT19), Motor(Ports.PORT20)) # The right motor group. It defines how we control them together. We also define which ports the motors are plugged into.
+right = MotorGroup(Motor(Ports.PORT8), Motor(Ports.PORT20)) # The right motor group. It defines how we control them together. We also define which ports the motors are plugged into.
 intake = Motor(Ports.PORT3, True) # The intake motors.
 
 # Lift
@@ -68,7 +68,7 @@ def intakeControl(intake: Motor, controller: Controller):
 #   Lift Functions                                                           #
 # ---------------------------------------------------------------------------- #
 LIFT_MIN = 0 # The lowest position of the lift, in degrees.
-LIFT_MAX = 1400 # To find put on 300 then go run code and go lift higher, if not at limit raise LIFT_MAX by 200-300, repeat, if lift at height limit do that degree maybe minus 20 or 30???
+LIFT_MAX = 850 # To find put on 300 then go run code and go lift higher, if not at limit raise LIFT_MAX by 200-300, repeat, if lift at height limit do that degree maybe minus 20 or 30???
 
 LIFT_KP = 0.25 # How strong the lift reacts to the error. Higher is faster.
 LIFT_TOLERENCE = 10 # How many degrees the lift may be off target and still be considered as at the target position.
@@ -140,6 +140,9 @@ def user_control():
         lift_control()
         brain.screen.set_cursor(2, 1)
         brain.screen.print("LIFT:", lift.position(DEGREES))
+        brain.screen.clear_line(3)
+        brain.screen.set_cursor(3, 1)
+        brain.screen.print("TARGET:", lift_target)
         wait(20, MSEC)
 # ---------------------------------------------------------------------------- #
 #   Other thing                                                                #
